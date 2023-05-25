@@ -18,7 +18,7 @@ gate: "and"i -> and_gate
 bfl: (bfl_statement ";")+
 
 bfl_statement: psi
-             | basic_events _MODELS phi
+             | basic_events _MODELS phi -> check_model
              | "[[" phi "]]" -> satisfaction_set
 
 psi: _EXISTS phi -> exists
@@ -26,18 +26,25 @@ psi: _EXISTS phi -> exists
    | _IDP "(" phi "," phi ")" -> idp
    | _SUP _paren -> sup
 
-phi: _paren -> paren
-   | BASIC_EVENT -> basic_event
-   | phi _IMPLIES phi -> implies
-   | phi _OR phi -> or
-   | phi _AND phi -> and
-   | phi _EQUIV phi -> equiv
-   | phi _NEQUIV phi -> nequiv
-   | _NEG phi -> neg
-   | phi evidence -> with_evidence
-   | _MCS _paren -> mcs
-   | _MPS _paren -> mps
-   | _VOT "[" RELATION INT "]" "(" basic_events ")" -> vot
+?phi: phi evidence -> with_evidence
+    | implies
+
+?implies: or (_IMPLIES implies)?
+
+?or: and (_OR or)?
+
+?and: comp (_AND and)?
+
+?comp: atom _EQUIV comp -> equiv
+     | atom _NEQUIV comp -> nequiv
+     | atom
+
+?atom: "(" phi ")"
+     | BASIC_EVENT -> basic_event
+     | _NEG atom -> neg
+     | _MCS _paren -> mcs
+     | _MPS _paren -> mps
+     | _VOT "[" RELATION INT "]" "(" basic_events ")" -> vot
 
 evidence: "[" (mapping ",")* mapping "]"
 mapping: BASIC_EVENT ":" TRUTH_VALUE
