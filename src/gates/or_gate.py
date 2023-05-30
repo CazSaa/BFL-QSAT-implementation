@@ -1,0 +1,2 @@
+class OrGate:
+    pass

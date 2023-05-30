@@ -1,0 +1,2 @@
+class AndGate:
+    pass
