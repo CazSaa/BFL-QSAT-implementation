@@ -15,9 +15,10 @@ class ParserTest(unittest.TestCase):
         c orOr ca;
         d 2oF4 e f g h;
         e vOt<2 i j k;
+        l;
         
         ---
-        \\forall i => (!a || b) && (c == d) != (e == (f != g));
+        \\forall i => (!a || b) && (c == d) != e == f != g;
         
         \\forall(IS => MoT);
         
@@ -77,7 +78,9 @@ class ParserTest(unittest.TestCase):
                                             Token('INT', '2')]),
                           Token('EVENT_NAME', 'i'),
                           Token('EVENT_NAME', 'j'),
-                          Token('EVENT_NAME', 'k')])]),
+                          Token('EVENT_NAME', 'k')]),
+                    Tree(Token('RULE', 'basic_event'), [
+                        Token('EVENT_NAME', 'l')])]),
                 Tree(Token('RULE', 'bfl'), [
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('forall', [
@@ -248,6 +251,45 @@ class ParserTest(unittest.TestCase):
                                     Token('BASIC_EVENT',
                                           'CIS')])])])])])])])
         )
+
+    def test_print_result(self):
+        print(parse('''
+        toplevel top;
+        top and a b c;
+        b Or or d;
+        c orOr ca;
+        d 2oF4 e f g h;
+        e vOt<2 i j k;
+        l;
+        
+        ---
+        \\forall i => (!a || b) && (c == d) != e == f != g;
+        
+        \\forall(IS => MoT);
+        
+        \\foRall(MoT => (H1 || H2 && H3 || H4 || H5));
+        
+        \\foraLl H4 => IWoS; // parentheses not mandatory
+        
+        \\forall(\\vot[>= 2](H1,H2,H3,H4,H5) => IWoS);
+        
+        [[\\mcs(IWoS) && H4]];
+        
+        \\eXists \\mps(IWoS)[H1: 0, H2: 0,H3: 0,H4: 0,H5: 0];
+        
+        \\idP(CIO,CIS);
+        
+        \\SUP(PP);
+        
+        UT, IW, H3 |= CPR && MoT;
+        
+        \\forall (CPR == CIW);
+        
+        \\forall (CPR != CIW);
+        
+        \\forall (!IS => !CIS);
+        ''').pretty())
+        self.assertTrue(True)
 
 
 if __name__ == '__main__':

@@ -4,9 +4,11 @@ galileo: tle _event*
 
 tle: "toplevel"i EVENT_NAME ";"
 
-_event: (intermediate_event | BASIC_EVENT) ";"
+_event: (intermediate_event | basic_event) ";"
 
 BASIC_EVENT: EVENT_NAME
+basic_event: EVENT_NAME
+
 intermediate_event: EVENT_NAME gate EVENT_NAME+
 
 gate: "and"i -> and_gate
