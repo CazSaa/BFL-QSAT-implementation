@@ -2,7 +2,7 @@ import unittest
 
 from lark import Tree, Token
 
-from parser import parse
+from parser.parser import parse
 
 
 class ParserTest(unittest.TestCase):
