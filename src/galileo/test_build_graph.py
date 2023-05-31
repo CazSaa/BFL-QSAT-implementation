@@ -3,11 +3,11 @@ import unittest
 import networkx as nx
 from networkx.utils import nodes_equal
 
-from gates import AndGate, OrGate, VotGate
-from parser.parser import parse
-from galileo.build_graph import build_graph
+from galileo.build_graph import build_fault_tree
 from galileo.exceptions import EventAlreadyDefinedError, NotAcyclicError, \
     NotExactlyOneRootError
+from gates import AndGate, OrGate, VotGate
+from parser.parser import parse
 
 
 def my_graph_equals(graph1: nx.Graph, graph2: nx.Graph):
@@ -27,7 +27,7 @@ class BuildGraphTest(unittest.TestCase):
         ---
         [[a]];
         ''')
-        graph = build_graph(tree)
+        graph = build_fault_tree(tree)
         graph2 = nx.DiGraph()
         graph2.add_node('top', gate=AndGate())
         graph2.add_node('a', gate=OrGate())
@@ -40,7 +40,7 @@ class BuildGraphTest(unittest.TestCase):
         self.assertTrue(my_graph_equals(graph, graph2))  # add assertion here
 
     def test_order_does_not_matter(self):
-        graph1 = build_graph(parse('''
+        graph1 = build_fault_tree(parse('''
         toplevel top;
         top and a b c;
         a or d e;
@@ -49,7 +49,7 @@ class BuildGraphTest(unittest.TestCase):
         ---
         [[a]];
         '''))
-        graph2 = build_graph(parse('''
+        graph2 = build_fault_tree(parse('''
         toplevel top;
         h vot>=2 i j k l;
         d 2of3 f g h;
@@ -61,7 +61,7 @@ class BuildGraphTest(unittest.TestCase):
         self.assertTrue(my_graph_equals(graph1, graph2))
 
     def test_can_define_basic_events_explicitly(self):
-        graph1 = build_graph(parse('''
+        graph1 = build_fault_tree(parse('''
         toplevel top;
         top and a b c;
         a or d e;
@@ -70,7 +70,7 @@ class BuildGraphTest(unittest.TestCase):
         ---
         [[a]];
         '''))
-        graph2 = build_graph(parse('''
+        graph2 = build_fault_tree(parse('''
         toplevel top;
         d 2of3 f g h;
         a or d e;
@@ -88,7 +88,7 @@ class BuildGraphTest(unittest.TestCase):
     def test_cannot_redefine_events(self):
         self.assertRaises(
             EventAlreadyDefinedError,
-            lambda: build_graph(parse('''
+            lambda: build_fault_tree(parse('''
                 toplevel top;
                 top and a b c;
                 a or d e;
@@ -104,7 +104,7 @@ class BuildGraphTest(unittest.TestCase):
     def test_cannot_contain_cycles(self):
         self.assertRaises(
             NotAcyclicError,
-            lambda: build_graph(parse('''
+            lambda: build_fault_tree(parse('''
                 toplevel top;
                 top or a;
                 a or b;
@@ -115,7 +115,7 @@ class BuildGraphTest(unittest.TestCase):
         )
 
     def test_only_top_event(self):
-        graph1 = build_graph(parse('''
+        graph1 = build_fault_tree(parse('''
             toplevel top;
             ---
             [[a]];
@@ -127,7 +127,7 @@ class BuildGraphTest(unittest.TestCase):
     def test_can_only_have_one_root(self):
         self.assertRaises(
             NotExactlyOneRootError,
-            lambda: build_graph(parse('''
+            lambda: build_fault_tree(parse('''
                 toplevel top;
                 a or b;
                 ---

@@ -2,7 +2,7 @@ import unittest
 
 from lark import Tree, Token
 
-from .parser import parse
+from parser import parse
 
 
 class ParserTest(unittest.TestCase):
@@ -85,78 +85,78 @@ class ParserTest(unittest.TestCase):
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('forall', [
                             Tree(Token('RULE', 'implies'), [
-                                Tree('basic_event',
-                                     [Token('BASIC_EVENT', 'i')]),
-                                Tree(Token('RULE', 'and'), [
-                                    Tree(Token('RULE', 'or'), [
+                                Tree('event',
+                                     [Token('EVENT_NAME', 'i')]),
+                                Tree(Token('RULE', 'and_'), [
+                                    Tree(Token('RULE', 'or_'), [
                                         Tree('neg', [
-                                            Tree('basic_event', [
+                                            Tree('event', [
                                                 Token(
-                                                    'BASIC_EVENT',
+                                                    'EVENT_NAME',
                                                     'a')])]),
-                                        Tree('basic_event', [
-                                            Token('BASIC_EVENT',
+                                        Tree('event', [
+                                            Token('EVENT_NAME',
                                                   'b')])]),
                                     Tree('nequiv', [
                                         Tree('equiv', [
-                                            Tree('basic_event',
-                                                 [Token('BASIC_EVENT', 'c')]),
-                                            Tree('basic_event',
-                                                 [Token('BASIC_EVENT', 'd')])
+                                            Tree('event',
+                                                 [Token('EVENT_NAME', 'c')]),
+                                            Tree('event',
+                                                 [Token('EVENT_NAME', 'd')])
                                         ]),
                                         Tree('equiv', [
-                                            Tree('basic_event',
-                                                 [Token('BASIC_EVENT', 'e')]),
+                                            Tree('event',
+                                                 [Token('EVENT_NAME', 'e')]),
                                             Tree('nequiv', [
-                                                Tree('basic_event', [
-                                                    Token('BASIC_EVENT', 'f')]),
-                                                Tree('basic_event',
-                                                     [Token('BASIC_EVENT',
+                                                Tree('event', [
+                                                    Token('EVENT_NAME', 'f')]),
+                                                Tree('event',
+                                                     [Token('EVENT_NAME',
                                                             'g')])])]
                                              )])])])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('forall', [
                             Tree(Token('RULE', 'implies'), [
-                                Tree('basic_event',
-                                     [Token('BASIC_EVENT', 'IS')]),
-                                Tree('basic_event', [
-                                    Token('BASIC_EVENT',
+                                Tree('event',
+                                     [Token('EVENT_NAME', 'IS')]),
+                                Tree('event', [
+                                    Token('EVENT_NAME',
                                           'MoT')])])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('forall', [
                             Tree(Token('RULE', 'implies'), [
-                                Tree('basic_event', [
-                                    Token('BASIC_EVENT', 'MoT')]),
-                                Tree(Token('RULE', 'or'), [
-                                    Tree('basic_event', [
-                                        Token('BASIC_EVENT',
+                                Tree('event', [
+                                    Token('EVENT_NAME', 'MoT')]),
+                                Tree(Token('RULE', 'or_'), [
+                                    Tree('event', [
+                                        Token('EVENT_NAME',
                                               'H1')]),
-                                    Tree(Token('RULE', 'or'), [
-                                        Tree(Token('RULE', 'and'),
-                                             [Tree('basic_event', [
+                                    Tree(Token('RULE', 'or_'), [
+                                        Tree(Token('RULE', 'and_'),
+                                             [Tree('event', [
                                                  Token(
-                                                     'BASIC_EVENT',
+                                                     'EVENT_NAME',
                                                      'H2')]),
-                                              Tree('basic_event', [
+                                              Tree('event', [
                                                   Token(
-                                                      'BASIC_EVENT',
+                                                      'EVENT_NAME',
                                                       'H3')])]),
-                                        Tree(Token('RULE', 'or'), [
-                                            Tree('basic_event', [
+                                        Tree(Token('RULE', 'or_'), [
+                                            Tree('event', [
                                                 Token(
-                                                    'BASIC_EVENT',
+                                                    'EVENT_NAME',
                                                     'H4')]),
-                                            Tree('basic_event', [
+                                            Tree('event', [
                                                 Token(
-                                                    'BASIC_EVENT',
+                                                    'EVENT_NAME',
                                                     'H5')])])])])])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('forall', [
                             Tree(Token('RULE', 'implies'), [
-                                Tree('basic_event',
-                                     [Token('BASIC_EVENT', 'H4')]),
-                                Tree('basic_event', [
-                                    Token('BASIC_EVENT',
+                                Tree('event',
+                                     [Token('EVENT_NAME', 'H4')]),
+                                Tree('event', [
+                                    Token('EVENT_NAME',
                                           'IWoS')])])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('forall', [
@@ -176,22 +176,22 @@ class ParserTest(unittest.TestCase):
                                                    'H4'),
                                              Token('BASIC_EVENT',
                                                    'H5')])]),
-                                Tree('basic_event', [
-                                    Token('BASIC_EVENT',
+                                Tree('event', [
+                                    Token('EVENT_NAME',
                                           'IWoS')])])])]),
                     Tree('satisfaction_set', [
-                        Tree(Token('RULE', 'and'), [Tree('mcs', [
-                            Tree('basic_event',
-                                 [Token('BASIC_EVENT', 'IWoS')])]),
+                        Tree(Token('RULE', 'and_'), [Tree('mcs', [
+                            Tree('event',
+                                 [Token('EVENT_NAME', 'IWoS')])]),
                                                     Tree(
-                                                        'basic_event',
+                                                        'event',
                                                         [Token(
-                                                            'BASIC_EVENT',
+                                                            'EVENT_NAME',
                                                             'H4')])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('exists', [Tree('with_evidence', [
-                            Tree('mps', [Tree('basic_event', [
-                                Token('BASIC_EVENT', 'IWoS')])]),
+                            Tree('mps', [Tree('event', [
+                                Token('EVENT_NAME', 'IWoS')])]),
                             Tree(Token('RULE', 'evidence'), [
                                 Tree(Token('RULE', 'mapping'),
                                      [Token('BASIC_EVENT', 'H1'),
@@ -210,45 +210,45 @@ class ParserTest(unittest.TestCase):
                                       Token('TRUTH_VALUE',
                                             '0')])])])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
-                        Tree('idp', [Tree('basic_event', [
-                            Token('BASIC_EVENT', 'CIO')]),
-                                     Tree('basic_event', [
-                                         Token('BASIC_EVENT',
+                        Tree('idp', [Tree('event', [
+                            Token('EVENT_NAME', 'CIO')]),
+                                     Tree('event', [
+                                         Token('EVENT_NAME',
                                                'CIS')])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
-                        Tree('sup', [Tree('basic_event', [
-                            Token('BASIC_EVENT', 'PP')])])]),
+                        Tree('sup', [Tree('event', [
+                            Token('EVENT_NAME', 'PP')])])]),
                     Tree('check_model', [
                         Tree(Token('RULE', 'basic_events'),
                              [Token('BASIC_EVENT', 'UT'),
                               Token('BASIC_EVENT', 'IW'),
                               Token('BASIC_EVENT', 'H3')]),
-                        Tree(Token('RULE', 'and'), [
-                            Tree('basic_event',
-                                 [Token('BASIC_EVENT', 'CPR')]),
-                            Tree('basic_event', [
-                                Token('BASIC_EVENT', 'MoT')])])]),
+                        Tree(Token('RULE', 'and_'), [
+                            Tree('event',
+                                 [Token('EVENT_NAME', 'CPR')]),
+                            Tree('event', [
+                                Token('EVENT_NAME', 'MoT')])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('forall', [Tree('equiv', [
-                            Tree('basic_event',
-                                 [Token('BASIC_EVENT', 'CPR')]),
-                            Tree('basic_event', [
-                                Token('BASIC_EVENT',
+                            Tree('event',
+                                 [Token('EVENT_NAME', 'CPR')]),
+                            Tree('event', [
+                                Token('EVENT_NAME',
                                       'CIW')])])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('forall', [Tree('nequiv', [
-                            Tree('basic_event',
-                                 [Token('BASIC_EVENT', 'CPR')]),
-                            Tree('basic_event', [
-                                Token('BASIC_EVENT',
+                            Tree('event',
+                                 [Token('EVENT_NAME', 'CPR')]),
+                            Tree('event', [
+                                Token('EVENT_NAME',
                                       'CIW')])])])]),
                     Tree(Token('RULE', 'bfl_statement'), [
                         Tree('forall', [
                             Tree(Token('RULE', 'implies'), [
-                                Tree('neg', [Tree('basic_event', [
-                                    Token('BASIC_EVENT', 'IS')])]),
-                                Tree('neg', [Tree('basic_event', [
-                                    Token('BASIC_EVENT',
+                                Tree('neg', [Tree('event', [
+                                    Token('EVENT_NAME', 'IS')])]),
+                                Tree('neg', [Tree('event', [
+                                    Token('EVENT_NAME',
                                           'CIS')])])])])])])])
         )
 

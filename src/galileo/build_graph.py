@@ -1,10 +1,10 @@
-import networkx as nx
 from lark import Tree
 from networkx import is_directed_acyclic_graph
 
-from gates import AndGate, OrGate, VotGate
 from galileo.exceptions import EventAlreadyDefinedError, NotAcyclicError, \
     NotExactlyOneRootError
+from galileo.fault_tree import FaultTree
+from gates import AndGate, OrGate, VotGate
 
 
 def get_galileo_tree(parse_tree: Tree):
@@ -25,12 +25,12 @@ def get_gate(gate: Tree):
         case 'vot_gate':
             return VotGate(gate.children[0], int(gate.children[1]))
         case 'of_gate':
-            return VotGate('>=', gate.children[0])
+            return VotGate('>=', int(gate.children[0]))
 
 
-def build_graph(parse_tree: Tree):
+def build_fault_tree(parse_tree: Tree):
     galileo_tree = get_galileo_tree(parse_tree)
-    graph = nx.DiGraph()
+    graph = FaultTree()
     defined_events = set()
 
     for line in galileo_tree.children:
@@ -39,7 +39,7 @@ def build_graph(parse_tree: Tree):
                 graph.add_node(line.children[0].value)
 
             case 'intermediate_event':
-                [event, gate, *children] = line.children
+                event, gate, *children = line.children
                 if event in defined_events:
                     raise EventAlreadyDefinedError()
 

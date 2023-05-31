@@ -31,18 +31,18 @@ psi: _EXISTS phi -> exists
 ?phi: phi evidence -> with_evidence
     | implies
 
-?implies: or (_IMPLIES implies)?
+?implies: or_ (_IMPLIES implies)?
 
-?or: and (_OR or)?
+?or_: and_ (_OR or_)?
 
-?and: comp (_AND and)?
+?and_: comp (_AND and_)?
 
 ?comp: atom _EQUIV comp -> equiv
      | atom _NEQUIV comp -> nequiv
      | atom
 
 ?atom: "(" phi ")"
-     | BASIC_EVENT -> basic_event
+     | EVENT_NAME -> event
      | _NEG atom -> neg
      | _MCS _paren -> mcs
      | _MPS _paren -> mps
