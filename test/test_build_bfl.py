@@ -18,7 +18,7 @@ def z3_equality(formula1: BoolRef, formula2: BoolRef):
     return s.check() == unsat
 
 
-def parse_helper(formula: str, start='psi', tree=default_tree):
+def parse_helper(formula: str, start='bfl_statement', tree=default_tree):
     return BflTransformer(tree).transform(parser.parse(formula, start))
 
 

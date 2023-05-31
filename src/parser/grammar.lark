@@ -19,14 +19,12 @@ gate: "and"i -> and_gate
 
 bfl: (bfl_statement ";")+
 
-bfl_statement: psi
+bfl_statement: _EXISTS phi -> exists
+             | _FORALL phi -> forall
+             | _IDP "(" phi "," phi ")" -> idp
+             | _SUP _paren -> sup
              | basic_events _MODELS phi -> check_model
              | "[[" phi "]]" -> satisfaction_set
-
-psi: _EXISTS phi -> exists
-   | _FORALL phi -> forall
-   | _IDP "(" phi "," phi ")" -> idp
-   | _SUP _paren -> sup
 
 ?phi: phi evidence -> with_evidence
     | implies
