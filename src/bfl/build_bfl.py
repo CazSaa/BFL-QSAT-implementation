@@ -1,9 +1,9 @@
-from lark import Transformer, Token
+from lark import Transformer, Token, Tree
 from z3 import Bool, And, Or, Implies, Not, ForAll, Exists, Bools, BoolRef, \
     substitute
 
 from galileo.fault_tree import FaultTree
-from gates import Gate
+from gates import Gate, VotGate
 from utils.get_vars import get_vars
 
 
@@ -72,6 +72,12 @@ class BflTransformer(Transformer):
 
     def mps(self, args):
         return self.mcs([Not(args[0])])
+
+    def vot(self, args):
+        return VotGate(args[0], int(args[1])).to_z3(*args[2])
+
+    def basic_events(self, args):
+        return [event_to_formula(be, self.fault_tree) for be in args]
 
     def mapping(self, args):
         return Bool(args[0].value) if args[1] == '1' \
