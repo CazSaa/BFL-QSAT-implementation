@@ -128,13 +128,13 @@ class BuildBflTest(unittest.TestCase):
             Exists(
                 [a, b, c],
                 And(
-                    Not(a),
+                    Not(Not(a)),
                     Not(Exists(
                         [a_, b_, c_],
                         And(
                             And(Implies(a_, a), Implies(b_, b), Implies(c_, c)),
                             Or(a_ != a, b_ != b, c_ != c),
-                            Not(a_)
+                            Not(Not(a_))
                         )
                     ))
                 )

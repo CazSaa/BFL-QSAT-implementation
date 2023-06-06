@@ -26,7 +26,11 @@ def event_to_formula(event: Token | str, fault_tree: FaultTree) -> BoolRef:
 def replace_with_primes(formula: BoolRef,
                         bes_and_primes: dict[BoolRef, BoolRef]):
     return substitute(formula, *bes_and_primes.items())
-    pass
+
+
+def negate_atoms(formula: BoolRef):
+    atoms = get_vars(formula)
+    return substitute(formula, *zip(atoms, map(Not, atoms)))
 
 
 # noinspection PyMethodMayBeStatic
@@ -71,7 +75,19 @@ class BflTransformer(Transformer):
         )
 
     def mps(self, args):
-        return self.mcs([Not(args[0])])
+        bes_and_primes = self.primes()
+        return And(
+            negate_atoms(Not(args[0])),
+            Not(Exists(
+                list(bes_and_primes.values()),
+                And(
+                    And(*(Implies(p, b) for b, p in bes_and_primes.items())),
+                    Or(*(p != b for b, p in bes_and_primes.items())),
+                    negate_atoms(
+                        replace_with_primes(Not(args[0]), bes_and_primes))
+                )
+            ))
+        )
 
     def vot(self, args):
         return VotGate(args[0], int(args[1])).to_z3(*args[2])
