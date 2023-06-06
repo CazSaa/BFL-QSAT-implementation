@@ -45,20 +45,20 @@ class BflTransformer(Transformer):
         self.prime_counter = 0
 
     def forall(self, args):
-        free_vars = list(get_vars(args[0]))
+        free_vars = get_vars(args[0])
         return ForAll(free_vars, args[0]) if len(free_vars) > 0 else args[0]
         # return ForAll([Bool(b) for b in self.fault_tree.get_basic_events()],
         #               args[0])
 
     def exists(self, args):
-        free_vars = list(get_vars(args[0]))
+        free_vars = get_vars(args[0])
         return Exists(free_vars, args[0]) if len(free_vars) > 0 else args[0]
         # return Exists([Bool(b) for b in self.fault_tree.get_basic_events()],
         #               args[0])
 
     def with_evidence(self, args):
         phi, evidence = args
-        return ForAll(list(get_vars(evidence)), Implies(evidence, phi))
+        return ForAll(get_vars(evidence), Implies(evidence, phi))
 
     def evidence(self, args):
         return And(*args) if len(args) > 1 else args[0]
