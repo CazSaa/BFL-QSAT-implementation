@@ -141,6 +141,24 @@ class MainTest(unittest.TestCase):
             main_helper('UT |= !MoT[UT:0];'),
             True
         )
+        self.assertEqual(
+            main_helper('IW, AB |= AT[IW: 0];'),
+            False
+        )
+
+    def test_nested_evidence(self):
+        self.assertEqual(
+            main_helper('\\forall (PP => DT[IW:1]) && (!AT[IW:0]);'),
+            True
+        )
+        self.assertEqual(
+            main_helper('\\forall (PP => DT[IW:0]) && (!AT[IW:0]);'),
+            False
+        )
+        self.assertEqual(
+            main_helper('\\forall (PP => DT[IW:1]) && (!AT[IW:1]);'),
+            False
+        )
 
     def test_main(self):
         self.assertListEqual(
