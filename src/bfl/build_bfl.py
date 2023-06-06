@@ -7,6 +7,10 @@ from gates import Gate, VotGate
 from utils.get_vars import get_vars
 
 
+def build_formula(parse_tree: Tree, fault_tree: FaultTree) -> BoolRef:
+    return BflTransformer(fault_tree).transform(parse_tree)
+
+
 def event_to_formula(event: Token | str, fault_tree: FaultTree) -> BoolRef:
     if event not in fault_tree.nodes:
         raise ValueError('Unknown event')
