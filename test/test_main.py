@@ -86,14 +86,12 @@ class MainTest(unittest.TestCase):
              frozenset({vw})}
         )
 
-    @unittest.skip('WIP')
     def test_idp_cio_cis(self):
         self.assertEqual(
             main_helper('\\idp(CIO,CIS);'),
             False
         )
 
-    @unittest.skip('WIP')
     def test_sup_pp(self):
         self.assertEqual(
             main_helper('\\SUP(PP);'),
