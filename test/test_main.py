@@ -92,6 +92,24 @@ class MainTest(unittest.TestCase):
             False
         )
 
+    def test_mode_idps(self):
+        self.assertEqual(
+            main_helper('\\idp(IW,IT);'),
+            True
+        )
+        self.assertEqual(
+            main('''
+            toplevel top; 
+            top or ga go;
+            ga and a b;
+            go and a b c;
+            ---
+            \\idp(c,top);
+            \\sup(c);
+            '''),
+            [True, True]
+        )
+
     def test_sup_pp(self):
         self.assertEqual(
             main_helper('\\SUP(PP);'),
