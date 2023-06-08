@@ -167,6 +167,10 @@ class MainTest(unittest.TestCase):
             ValueError,
             lambda: main_helper('IW |= CPR && !CPR;')
         )
+        self.assertRaises(
+            ValueError,
+            lambda: main_helper('CPR |= CPR;')
+        )
 
     def test_model_check_evidence_set_false(self):
         self.assertEqual(

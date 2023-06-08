@@ -82,7 +82,7 @@ def get_status_vector(parse_tree: Tree, fault_tree: FaultTree):
     all_bes = fault_tree.get_basic_events_set()
     if not bes_in_sv.issubset(all_bes):
         raise ValueError(
-            'Status vector can only contain basic events')  # todo test
+            'Status vector can only contain basic events')
     bes_not_in_sv = all_bes - bes_in_sv
     return And(*(map(Bool, bes_in_sv)), *(Not(Bool(b)) for b in bes_not_in_sv))
 
