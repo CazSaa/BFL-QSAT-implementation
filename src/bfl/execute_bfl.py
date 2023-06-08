@@ -1,7 +1,7 @@
 from lark import Tree
 from lark.reconstruct import Reconstructor
 from z3 import Solver, sat, And, Bool, Not, ModelRef, is_true, BoolRef, \
-    substitute, BoolVal
+    substitute, BoolVal, unsat
 
 from bfl.build_bfl import build_formula, event_to_formula
 from galileo.fault_tree import FaultTree
@@ -87,6 +87,35 @@ def get_status_vector(parse_tree: Tree, fault_tree: FaultTree):
     return And(*(map(Bool, bes_in_sv)), *(Not(Bool(b)) for b in bes_not_in_sv))
 
 
+def generate_counterexample(status_vector: BoolRef, formula: BoolRef):
+    s = Solver()
+    s.add(formula)
+    if s.check() == unsat:
+        raise ValueError('Cannot generate counterexample for unsatisfiable '
+                         'formula')
+    counterexample = []
+    for truth_val in status_vector.children():
+        # Note: the order of `children()` can differ between different instances
+        # of the same `status_vector`, and the result of this function can be
+        # different based on this order.
+        s.push()
+
+        s.add(truth_val)
+        if s.check() == unsat:
+            counterexample.append(Not(truth_val))
+            s.pop()
+            s.add(Not(truth_val))
+            assert s.check() == sat
+        else:
+            counterexample.append(truth_val)
+
+    # `s2` is just used to generate proper input for `get_true_events`
+    s2 = Solver()
+    s2.add(And(*counterexample))
+    s2.check()
+    return get_true_events(s2.model())
+
+
 def check_model(parse_tree: Tree, fault_tree: FaultTree):
     assert parse_tree.data == 'check_model'
     status_vector = get_status_vector(parse_tree.children[0], fault_tree)
@@ -94,7 +123,10 @@ def check_model(parse_tree: Tree, fault_tree: FaultTree):
     s = Solver()
     s.add(formula)
     s.add(status_vector)
-    return s.check() == sat
+    if s.check() == sat:
+        return True
+    else:
+        return generate_counterexample(status_vector, formula)
 
 
 def get_true_events(model: ModelRef):

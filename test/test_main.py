@@ -29,7 +29,7 @@ def main_helper(bfl_formula: str):
     ---
     {bfl_formula}
     ''')
-    return result if len(result) > 1 else result[0]
+    return result if len(result) > 1 else list(result)[0]
 
 
 class MainTest(unittest.TestCase):
@@ -125,7 +125,7 @@ class MainTest(unittest.TestCase):
     def test_model_check_2(self):
         self.assertEqual(
             main_helper('UT, IW, H3 |= CPR && MoT && SH;'),
-            False
+            frozenset({ut, iw, h3, vw, h1})
         )
 
     def test_forall_cpr_eq_ciw(self):
@@ -152,14 +152,31 @@ class MainTest(unittest.TestCase):
             True
         )
 
+    def test_counterexamples(self):
+        self.assertIn(
+            main_helper('IW, H3, IT |= \\mcs(CPR);'),
+            [frozenset({iw, h3}), frozenset({it, h2})]
+        )
+        self.assertIn(
+            main_helper('H3, IT, H2 |= \\mcs(CPR);'),
+            [frozenset({iw, h3}), frozenset({it, h2})]
+        )
+
+    def test_errors(self):
+        self.assertRaises(
+            ValueError,
+            lambda: main_helper('IW |= CPR && !CPR;')
+        )
+
     def test_model_check_evidence_set_false(self):
         self.assertEqual(
             main_helper('UT |= !MoT[UT:0];'),
             True
         )
-        self.assertEqual(
-            main_helper('IW, AB |= AT[IW: 0];'),
-            False
+        # This also implies that the model does not satisfy the formula
+        self.assertRaises(
+            ValueError,
+            lambda: main_helper('IW, AB |= AT[IW: 0];')
         )
 
     def test_nested_evidence(self):
@@ -194,9 +211,9 @@ class MainTest(unittest.TestCase):
         
         [[\\mps(IWoS)]];
         
-        //\\idp(CIO,CIS);
+        \\idp(CIO,CIS);
         
-        //\\SUP(PP);
+        \\SUP(PP);
         
         // below by me
         UT, IW, H3 |= CPR && MoT;
@@ -228,10 +245,11 @@ class MainTest(unittest.TestCase):
                  frozenset({pp, h4, is_, ab, mv, ut}),
                  frozenset({pp, h4, h5, ab, mv, ut}), frozenset({h1}),
                  frozenset({vw})},  # [[\\mps(IWoS)]];
-                # False,  # \\idp(CIO,CIS)
-                # False,  # \\SUP(PP)
+                False,  # \\idp(CIO,CIS)
+                False,  # \\SUP(PP)
                 True,  # UT, IW, H3 |= CPR && MoT
-                False,  # UT, IW, H3 |= CPR && MoT && SH
+                frozenset({ut, iw, h3, vw,
+                           h1}),  # UT, IW, H3 |= CPR && MoT && SH
                 False,  # \\forall (CPR == CIW)
                 False,  # \\forall (CPR != CIW)
                 True,  # \\forall (!IS => !CIS)
