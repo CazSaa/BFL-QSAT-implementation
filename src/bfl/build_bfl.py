@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from lark import Transformer, Token, Tree
 from z3 import Bool, And, Or, Implies, Not, ForAll, Exists, Bools, BoolRef, \
     substitute
@@ -5,12 +7,16 @@ from z3 import Bool, And, Or, Implies, Not, ForAll, Exists, Bools, BoolRef, \
 from galileo.fault_tree import FaultTree
 from gates import Gate, VotGate
 from utils.get_vars import get_vars
+from utils.list_to_tuple import list_to_tuple
+
+CACHE_SIZE = 1000
 
 
 def build_formula(parse_tree: Tree, fault_tree: FaultTree) -> BoolRef:
     return BflTransformer(fault_tree).transform(parse_tree)
 
 
+@lru_cache(maxsize=CACHE_SIZE)
 def event_to_formula(event: Token | str, fault_tree: FaultTree) -> BoolRef:
     if event not in fault_tree.nodes:
         raise ValueError('Unknown event')
@@ -44,26 +50,36 @@ class BflTransformer(Transformer):
         self.fault_tree = fault_tree
         self.prime_counter = 0
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def forall(self, args):
         free_vars = get_vars(args[0])
         return ForAll(free_vars, args[0]) if len(free_vars) > 0 else args[0]
         # return ForAll([Bool(b) for b in self.fault_tree.get_basic_events()],
         #               args[0])
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def exists(self, args):
         free_vars = get_vars(args[0])
         return Exists(free_vars, args[0]) if len(free_vars) > 0 else args[0]
         # return Exists([Bool(b) for b in self.fault_tree.get_basic_events()],
         #               args[0])
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def with_evidence(self, args):
         phi, evidence = args
         return ForAll(get_vars(evidence), Implies(evidence, phi))
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def evidence(self, args):
         return And(*args) if len(args) > 1 else args[0]
         # return reduce(operator.ior, args, {})
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def mcs(self, args):
         bes_and_primes = self.primes()
         return And(
@@ -78,6 +94,8 @@ class BflTransformer(Transformer):
             ))
         )
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def mps(self, args):
         bes_and_primes = self.primes()
         return And(
@@ -93,35 +111,55 @@ class BflTransformer(Transformer):
             ))
         )
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def vot(self, args):
         return VotGate(args[0], int(args[1])).to_z3(*args[2])
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def basic_events(self, args):
-        return [event_to_formula(be, self.fault_tree) for be in args]
+        return tuple((event_to_formula(be, self.fault_tree) for be in args))
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def mapping(self, args):
         return Bool(args[0].value) if args[1] == '1' \
             else Not(Bool(args[0].value))
         # return {args[0]: True if args[1] == '1' else False}
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def and_(self, args):
         return And(*args)
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def or_(self, args):
         return Or(*args)
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def implies(self, args):
         return Implies(*args)
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def equiv(self, args):
         return args[0] == args[1]
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def nequiv(self, args):
         return args[0] != args[1]
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def neg(self, args):
         return Not(args[0])
 
+    @list_to_tuple
+    @lru_cache(maxsize=CACHE_SIZE)
     def event(self, args):
         return event_to_formula(args[0], self.fault_tree)
 
