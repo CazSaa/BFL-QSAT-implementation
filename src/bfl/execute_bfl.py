@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from lark import Tree
 from lark.reconstruct import Reconstructor
 from z3 import Solver, sat, And, Bool, Not, ModelRef, is_true, BoolRef, \
@@ -46,10 +48,11 @@ def sup_statement(parse_tree: Tree, fault_tree: FaultTree):
     return are_formulas_independent(formula, root_formula)
 
 
-def get_dependent_variables(formula: BoolRef) -> set[BoolRef]:
+def get_dependent_variables(formula: BoolRef,
+                            check_vars: Iterable[BoolRef]) -> set[BoolRef]:
     result = set()
 
-    for var in get_vars(formula):
+    for var in check_vars:
         s = Solver()
         s.add(substitute(formula, (var, BoolVal(True)))
               != substitute(formula, (var, BoolVal(False))))
@@ -67,13 +70,13 @@ def idp_statement(parse_tree: Tree, fault_tree: FaultTree):
 
 
 def are_formulas_independent(formula1, formula2):
-    # This could be more efficient because not all variables need to be checked
-    # in order to conclude something here. For example, if formula1 only
-    # contains one variable, it must only be checked whether this variable is a
-    # dependent variable in formula3.
-    vars1 = get_dependent_variables(formula1)
-    vars2 = get_dependent_variables(formula2)
-    return vars1.isdisjoint(vars2)
+    vars1 = set(get_vars(formula1))
+    vars2 = set(get_vars(formula2))
+    intersection = vars1.intersection(vars2)
+
+    dvars1 = get_dependent_variables(formula1, intersection)
+    dvars2 = get_dependent_variables(formula2, intersection)
+    return dvars1.isdisjoint(dvars2)
 
 
 def get_status_vector(parse_tree: Tree, fault_tree: FaultTree):
