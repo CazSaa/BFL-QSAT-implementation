@@ -92,7 +92,7 @@ class MainTest(unittest.TestCase):
             False
         )
 
-    def test_mode_idps(self):
+    def test_more_idps(self):
         self.assertEqual(
             main_helper('\\idp(IW,IT);'),
             True
@@ -106,6 +106,20 @@ class MainTest(unittest.TestCase):
             ---
             \\idp(c,top);
             \\sup(c);
+            '''),
+            [True, True]
+        )
+        self.assertEqual(
+            main('''
+            toplevel top; 
+            top or ga go gi;
+            ga and a b;
+            go and a b c d;
+            gi and a b tg;
+            tg or c d;
+            ---
+            \\idp(tg,top);
+            \\sup(tg);
             '''),
             [True, True]
         )
