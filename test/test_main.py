@@ -2,7 +2,7 @@ import unittest
 
 from z3 import Bools
 
-from main import main
+from run_bfl import main
 
 iw, h3, it, h2, pp, h1, h4, is_, h5, ab, mv, ut, vw = \
     map(lambda b: b.decl(), Bools("IW H3 IT H2 PP H1 H4 IS H5 AB MV UT VW"))
