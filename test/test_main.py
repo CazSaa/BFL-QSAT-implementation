@@ -275,7 +275,7 @@ class MainTest(unittest.TestCase):
                 True,  # UT |= !MoT[UT:0];
             ]
         )
-        self.assertEqual(True, True)  # add assertion here
+        self.assertEqual(True, True)
 
 
 if __name__ == '__main__':

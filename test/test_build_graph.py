@@ -37,7 +37,7 @@ class BuildGraphTest(unittest.TestCase):
             ('a', 'top'), ('b', 'top'), ('c', 'top'), ('d', 'a'), ('e', 'a'),
             ('f', 'd'), ('g', 'd'), ('h', 'd'), ('i', 'h'), ('j', 'h'),
             ('k', 'h'), ('l', 'h')])
-        self.assertTrue(my_graph_equals(graph, graph2))  # add assertion here
+        self.assertTrue(my_graph_equals(graph, graph2))
 
     def test_order_does_not_matter(self):
         graph1 = build_fault_tree(parse('''
