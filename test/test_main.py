@@ -1,4 +1,7 @@
+import io
 import unittest
+from contextlib import redirect_stdout
+from typing import Callable
 
 from z3 import Bools
 
@@ -29,11 +32,16 @@ def main_helper(bfl_formula: str):
     ---
     {bfl_formula}
     ''')
-    return result if len(result) > 1 else list(result)[0]
+    return result if result is None or len(result) > 1 else list(result)[0]
 
 
 class MainTest(unittest.TestCase):
     maxDiff = None
+
+    def assertPrints(self, text: str, func: Callable):
+        with redirect_stdout(io.StringIO()) as o:
+            func()
+        self.assertIn(text, o.getvalue())
 
     def test_forall_is_mot(self):
         self.assertEqual(
@@ -177,13 +185,17 @@ class MainTest(unittest.TestCase):
         )
 
     def test_errors(self):
-        self.assertRaises(
-            ValueError,
+        self.assertPrints(
+            'Error: Cannot generate counterexample for unsatisfiable formula',
             lambda: main_helper('IW |= CPR && !CPR;')
         )
-        self.assertRaises(
-            ValueError,
+        self.assertPrints(
+            'Error: Status vector can only contain basic events',
             lambda: main_helper('CPR |= CPR;')
+        )
+        self.assertPrints(
+            'Error: Unknown event `bad`',
+            lambda: main_helper('\\exists bad;')
         )
 
     def test_model_check_evidence_set_false(self):
@@ -191,10 +203,11 @@ class MainTest(unittest.TestCase):
             main_helper('UT |= !MoT[UT:0];'),
             True
         )
-        # This also implies that the model does not satisfy the formula
-        self.assertRaises(
-            ValueError,
-            lambda: main_helper('IW, AB |= AT[IW: 0];')
+        # None implies that the model does not satisfy the formula because the
+        # formula is unsatisfiable
+        self.assertEqual(
+            None,
+            main_helper('IW, AB |= AT[IW: 0];')
         )
 
     def test_nested_evidence(self):

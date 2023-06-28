@@ -4,6 +4,7 @@ from z3 import BoolRef, Solver, Not, unsat, Bools, And, Or, Implies, eq, \
     ForAll, Exists, Function, BoolSort, AtLeast, AtMost
 
 from bfl.build_bfl import BflTransformer, event_to_formula
+from bfl.exceptions import BFLError
 from galileo.build_graph import build_fault_tree
 from galileo.fault_tree import FaultTree
 from parser.parser import parser
@@ -167,7 +168,7 @@ class BuildBflTest(unittest.TestCase):
 
     def test_unknown_event_error(self):
         self.assertRaises(
-            ValueError,
+            BFLError,
             lambda: event_to_formula('e', default_tree)
         )
 

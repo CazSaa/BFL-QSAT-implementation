@@ -6,6 +6,7 @@ from z3 import Solver, sat, And, Bool, Not, ModelRef, is_true, BoolRef, \
     substitute, BoolVal, unsat
 
 from bfl.build_bfl import build_formula, event_to_formula
+from bfl.exceptions import BFLError
 from galileo.fault_tree import FaultTree
 from parser.parser import parser
 from utils.all_models import all_models
@@ -84,7 +85,7 @@ def get_status_vector(parse_tree: Tree, fault_tree: FaultTree):
     bes_in_sv = {token.value for token in parse_tree.children}
     all_bes = fault_tree.get_basic_events_set()
     if not bes_in_sv.issubset(all_bes):
-        raise ValueError(
+        raise BFLError(
             'Status vector can only contain basic events')
     bes_not_in_sv = all_bes - bes_in_sv
     return And(*(map(Bool, bes_in_sv)), *(Not(Bool(b)) for b in bes_not_in_sv))
@@ -94,8 +95,8 @@ def generate_counterexample(status_vector: BoolRef, formula: BoolRef):
     s = Solver()
     s.add(formula)
     if s.check() == unsat:
-        raise ValueError('Cannot generate counterexample for unsatisfiable '
-                         'formula')
+        raise BFLError('Cannot generate counterexample for unsatisfiable '
+                       'formula')
     counterexample = []
     for truth_val in status_vector.children():
         # Note: the order of `children()` can differ between different instances
@@ -168,10 +169,15 @@ def execute_bfl(parse_tree: Tree, fault_tree: FaultTree, print_output=False):
         if print_output:
             print(f'Solving {reconstruct(statement)}\n...')
 
-        result = execute_bfl_statement(statement, fault_tree)
+        try:
+            result = execute_bfl_statement(statement, fault_tree)
+        except BFLError as e:
+            result = None
+            print(f'Error: {e}\n')
+
         results.append(result)
 
-        if print_output:
+        if print_output and result is not None:
             print(result, '\n')
 
     return results

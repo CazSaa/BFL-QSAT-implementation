@@ -1,9 +1,11 @@
 from functools import lru_cache
 
 from lark import Transformer, Token, Tree
+from lark.exceptions import VisitError
 from z3 import Bool, And, Or, Implies, Not, ForAll, Exists, Bools, BoolRef, \
     substitute
 
+from bfl.exceptions import BFLError
 from galileo.fault_tree import FaultTree
 from gates import Gate, VotGate
 from utils.get_vars import get_vars
@@ -13,13 +15,18 @@ CACHE_SIZE = 1000
 
 
 def build_formula(parse_tree: Tree, fault_tree: FaultTree) -> BoolRef:
-    return BflTransformer(fault_tree).transform(parse_tree)
+    try:
+        return BflTransformer(fault_tree).transform(parse_tree)
+    except VisitError as e:
+        if isinstance(e.orig_exc, BFLError):
+            raise e.orig_exc
+        raise e
 
 
 @lru_cache(maxsize=CACHE_SIZE)
 def event_to_formula(event: Token | str, fault_tree: FaultTree) -> BoolRef:
     if event not in fault_tree.nodes:
-        raise ValueError('Unknown event')
+        raise BFLError(f'Unknown event `{event}`')
 
     # noinspection PyCallingNonCallable
     if fault_tree.in_degree(event) == 0:  # basic event

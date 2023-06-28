@@ -1,0 +1,2 @@
+class BFLError(Exception):
+    pass

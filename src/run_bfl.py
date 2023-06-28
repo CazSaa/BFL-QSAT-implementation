@@ -12,7 +12,7 @@ def main(bfl_text: str):
     try:
         return execute_str(bfl_text, True)
     except UnexpectedInput as e:
-        print(f'Parse error:\n{e}', file=sys.stderr)
+        print(f'Parse error:\n{e}\n', file=sys.stderr)
 
 
 def execute_str(bfl_text: str, print_output=False):
