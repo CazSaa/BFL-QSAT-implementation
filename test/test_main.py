@@ -12,6 +12,8 @@ iw, h3, it, h2, pp, h1, h4, is_, h5, ab, mv, ut, vw = \
 
 
 def main_helper(bfl_formula: str):
+    # For a graphical representation of this tree,
+    # see figures/FT_COVID_Example_tree_AND.pdf
     result = main(f'''
     toplevel IWoS;
     IWoS and CPR MoT SH;

@@ -1,4 +1,4 @@
-toplevel IWoS;
+toplevel IWoS; // For a graphical representation of this tree, see figures/FT_COVID_Example_tree_VOT.pdf
 IWoS vot>=2 CPR MoT SH;
 CPR or CP CR;
 CP and IW H3;
