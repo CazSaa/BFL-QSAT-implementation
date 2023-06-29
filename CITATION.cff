@@ -1,0 +1,20 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: BFL QSAT Implementation
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Caz
+    family-names: Saaltink
+    email: cazsaaltink@gmail.com
+    affiliation: University of Twente
+version: 1.0.0
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.8093373
+repository-code: 'https://github.com/CazSaa/BFL-QSAT-implementation'
+license: MIT
